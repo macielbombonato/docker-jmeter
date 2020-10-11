@@ -23,9 +23,9 @@ RUN wget https://repo1.maven.org/maven2/kg/apc/cmdrunner/2.2/cmdrunner-2.2.jar -
 RUN java -cp /opt/tools/jmeter/lib/ext/jmeter-plugins-manager.jar org.jmeterplugins.repository.PluginManagerCMDInstaller
 RUN /opt/tools/jmeter/bin/./PluginsManagerCMD.sh install jpgc-webdriver
 
-ENV PROPS_PATH "user.properties"
-ENV JMX_FILE "test.jmx"
-ENV RUN_TEST "true"
+ENV PROPS_PATH '${PROPS_PATH:"user.properties"}'
+ENV JMX_FILE '${JMX_FILE:"test.jmx"}'
+ENV RUN_TEST '${RUN_TEST:"true"}'
 
 ENV JMETER_HOME "/opt/tools/jmeter"
 ENV RESULT_HOME "/opt/results"
