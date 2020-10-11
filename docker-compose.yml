@@ -1,0 +1,12 @@
+version: '3'
+services:
+  app:
+    image: macielbombonato/docker-jmeter:latest
+    container_name: jmeter
+    environment:
+        - PROPS_PATH=user.properties
+        - JMX_FILE=YourTestPlan.jmx
+        - RUN_TEST=true
+    volumes:
+        - ~/files/jmeter/jmx:/opt/jmx
+        - ~/files/jmeter/results:/opt/results
