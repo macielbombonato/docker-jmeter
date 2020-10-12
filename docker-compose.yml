@@ -6,7 +6,10 @@ services:
     environment:
         - PROPS_PATH=user.properties
         - JMX_FILE=YourTestPlan.jmx
+        - JTL_FILE=YourTestResult.jtl
         - RUN_TEST=true
+        - MERGE_RESULTS=false
+        - REPORT_FOLDER=report
     volumes:
         - ~/files/jmeter/jmx:/opt/jmx
         - ~/files/jmeter/results:/opt/results
