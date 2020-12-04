@@ -22,6 +22,7 @@ Open `docker-compose.yml` file and change theses variables:
 - RUN_TEST=true
 - MERGE_RESULTS=false
 - REPORT_FOLDER=report
+- HEAP=-Xms2g -Xmx2g -XX:MaxMetaspaceSize=256m
 
 ### Volumes  
 - /your/jmx/location:/opt/jmx

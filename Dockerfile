@@ -13,6 +13,8 @@ RUN mkdir /opt/tools
 
 ARG JMETER_VERSION
 
+ENV JMETER_VERSION '${JMETER_VERSION:5.3}'
+
 RUN mkdir -p /opt/tmp
 RUN cd /opt/tmp 
 RUN wget https://downloads.apache.org/jmeter/binaries/apache-jmeter-${JMETER_VERSION}.zip
