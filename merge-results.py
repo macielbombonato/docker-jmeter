@@ -11,20 +11,21 @@ allLines = []
 isFirstFile = True
 
 for fileName in fileList:
-    print("=> Reading file:", fileName)
+    if (fileName != resultFileName):
+        print("=> Reading file:", fileName)
 
-    lines = []
+        lines = []
 
-    with open(fileName) as f:
-        lines = f.readlines()
-        f.close()
+        with open(fileName) as f:
+            lines = f.readlines()
+            f.close()
 
-    if (isFirstFile): 
-        isFirstFile = False
-    else:
-        lines.remove(lines[0])
+        if (isFirstFile): 
+            isFirstFile = False
+        else:
+            lines.remove(lines[0])
 
-    allLines.extend(lines)
+        allLines.extend(lines)
 
 print("=> Writing file:", resultFileName)
 with open(resultFileName, "w") as f:

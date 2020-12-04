@@ -11,9 +11,7 @@ ENV DEBIAN_FRONTEND teletype
 
 RUN mkdir /opt/tools
 
-ARG JMETER_VERSION
-
-ENV JMETER_VERSION "${JMETER_VERSION:5.3}"
+ARG JMETER_VERSION=5.3
 
 RUN mkdir -p /opt/tmp
 RUN cd /opt/tmp 
@@ -27,13 +25,13 @@ RUN wget https://repo1.maven.org/maven2/kg/apc/cmdrunner/2.2/cmdrunner-2.2.jar -
 RUN java -cp /opt/tools/jmeter/lib/ext/jmeter-plugins-manager.jar org.jmeterplugins.repository.PluginManagerCMDInstaller
 RUN /opt/tools/jmeter/bin/./PluginsManagerCMD.sh install jpgc-webdriver
 
-ENV PROPS_PATH '${PROPS_PATH:"user.properties"}'
-ENV JMX_FILE '${JMX_FILE:"test.jmx"}'
-ENV JTL_FILE '${JTL_FILE:"result.jtl"}'
-ENV RUN_TEST '${RUN_TEST:"true"}'
-ENV MERGE_RESULTS '${MERGE_RESULTS:"false"}'
-ENV REPORT_FOLDER '${REPORT_FOLDER:"report"}'
-ENV HEAP '${HEAP:"-Xms2g -Xmx2g -XX:MaxMetaspaceSize=256m"}'
+ENV PROPS_PATH 'user.properties'
+ENV JMX_FILE 'test.jmx'
+ENV JTL_FILE 'result.jtl'
+ENV RUN_TEST 'true'
+ENV MERGE_RESULTS 'false'
+ENV REPORT_FOLDER 'report'
+ENV HEAP '-Xms2g -Xmx2g -XX:MaxMetaspaceSize=256m'
 
 ENV JMETER_HOME "/opt/tools/jmeter"
 ENV RESULT_HOME "/opt/results"
@@ -59,6 +57,7 @@ RUN echo 'echo "| JTL_FILE:      " ${JTL_FILE}' >> /opt/entrypoint.sh
 RUN echo 'echo "| RUN_TEST:      " ${RUN_TEST}' >> /opt/entrypoint.sh
 RUN echo 'echo "| MERGE_RESULTS: " ${MERGE_RESULTS}' >> /opt/entrypoint.sh
 RUN echo 'echo "| REPORT_FOLDER: " ${REPORT_FOLDER}' >> /opt/entrypoint.sh
+RUN echo 'echo "| HEAP:          " ${HEAP}' >> /opt/entrypoint.sh
 RUN echo 'echo "|====================================|"' >> /opt/entrypoint.sh
 
 RUN echo 'if [ "${RUN_TEST}" = false ] ; then' >> /opt/entrypoint.sh
@@ -74,7 +73,13 @@ RUN echo 'fi' >> /opt/entrypoint.sh
 
 RUN echo 'echo "--- MOVING OLD REPORTS ---"' >> /opt/entrypoint.sh
 RUN echo 'mv ${RESULT_HOME}/${REPORT_FOLDER} ${RESULT_HOME}/${REPORT_FOLDER}-$(date +"%Y%m%d%H%M")' >> /opt/entrypoint.sh
+
 RUN echo 'echo "+++ GENERATING REPORT +++"' >> /opt/entrypoint.sh
-RUN echo '${JMETER_HOME}/bin/jmeter -g ${RESULT_HOME}/${JTL_FILE} -o ${RESULT_HOME}/${REPORT_FOLDER}' >> /opt/entrypoint.sh
+RUN echo 'if [ "${MERGE_RESULTS}" = true ] ; then' >> /opt/entrypoint.sh
+RUN echo '    ${JMETER_HOME}/bin/jmeter -g ${RESULT_HOME}/mergedResults.jtl -o ${RESULT_HOME}/${REPORT_FOLDER}' >> /opt/entrypoint.sh
+RUN echo 'else' >> /opt/entrypoint.sh
+RUN echo '    ${JMETER_HOME}/bin/jmeter -g ${RESULT_HOME}/${JTL_FILE} -o ${RESULT_HOME}/${REPORT_FOLDER}' >> /opt/entrypoint.sh
+RUN echo 'fi' >> /opt/entrypoint.sh
+
 
 ENTRYPOINT [ "sh", "/opt/entrypoint.sh"]
