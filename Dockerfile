@@ -11,11 +11,13 @@ ENV DEBIAN_FRONTEND teletype
 
 RUN mkdir /opt/tools
 
+ARG JMETER_VERSION
+
 RUN mkdir -p /opt/tmp
 RUN cd /opt/tmp 
-RUN wget https://downloads.apache.org/jmeter/binaries/apache-jmeter-5.3.zip
-RUN unzip apache-jmeter-5.3.zip
-RUN mv apache-jmeter-5.3 /opt/tools/jmeter
+RUN wget https://downloads.apache.org/jmeter/binaries/apache-jmeter-${JMETER_VERSION}.zip
+RUN unzip apache-jmeter-${JMETER_VERSION}.zip
+RUN mv apache-jmeter-${JMETER_VERSION} /opt/tools/jmeter
 RUN rm -rf /opt/tmp
 
 RUN wget https://jmeter-plugins.org/get/ -O /opt/tools/jmeter/lib/ext/jmeter-plugins-manager.jar
@@ -29,6 +31,7 @@ ENV JTL_FILE '${JTL_FILE:"result.jtl"}'
 ENV RUN_TEST '${RUN_TEST:"true"}'
 ENV MERGE_RESULTS '${MERGE_RESULTS:"false"}'
 ENV REPORT_FOLDER '${REPORT_FOLDER:"report"}'
+ENV HEAP '${HEAP:"-Xms2g -Xmx2g -XX:MaxMetaspaceSize=256m"}'
 
 ENV JMETER_HOME "/opt/tools/jmeter"
 ENV RESULT_HOME "/opt/results"
@@ -67,6 +70,8 @@ RUN echo '    echo "+++ TESTING +++"' >> /opt/entrypoint.sh
 RUN echo '    ${JMETER_HOME}/bin/jmeter -n -p /opt/jmx/${PROPS_PATH} -t /opt/jmx/${JMX_FILE} -l ${RESULT_HOME}/${JTL_FILE} -j ${RESULT_HOME}/log-file.log' >> /opt/entrypoint.sh
 RUN echo 'fi' >> /opt/entrypoint.sh
 
+RUN echo 'echo "--- MOVING OLD REPORTS ---"' >> /opt/entrypoint.sh
+RUN echo 'mv ${RESULT_HOME}/${REPORT_FOLDER} ${RESULT_HOME}/${REPORT_FOLDER}-$(date +"%Y%m%d%H%M")' >> /opt/entrypoint.sh
 RUN echo 'echo "+++ GENERATING REPORT +++"' >> /opt/entrypoint.sh
 RUN echo '${JMETER_HOME}/bin/jmeter -g ${RESULT_HOME}/${JTL_FILE} -o ${RESULT_HOME}/${REPORT_FOLDER}' >> /opt/entrypoint.sh
 
