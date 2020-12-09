@@ -6,11 +6,13 @@ services:
     environment:
         - PROPS_PATH=user.properties
         - JMX_FILE=YourTestPlan.jmx
-        - JTL_FILE=YourTestResult.jtl
+        - YML_FILE=user.yml
+        - JTL_FILE=kpi.jtl
         - RUN_TEST=true
+        - USE_BLAZE_METER=false
         - MERGE_RESULTS=false
         - REPORT_FOLDER=report
-        - HEAP=-Xms2g -Xmx2g -XX:MaxMetaspaceSize=256m
+        - HEAP=-Xms1g -Xmx1g -XX:MaxMetaspaceSize=256m
     volumes:
-        - ~/files/jmeter/jmx:/opt/jmx
-        - ~/files/jmeter/results:/opt/results
+        - .:/opt/jmx
+        - ./results:/opt/results

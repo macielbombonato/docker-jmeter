@@ -18,11 +18,13 @@ Open `docker-compose.yml` file and change theses variables:
 ### Environment variables    
 - PROPS_PATH=user.properties
 - JMX_FILE=YourTestPlan.jmx
-- JTL_FILE=YourTestResult.jtl
+- YML_FILE=user.yml
+- JTL_FILE=kpi.jtl
 - RUN_TEST=true
+- USE_BLAZE_METER=true
 - MERGE_RESULTS=false
 - REPORT_FOLDER=report
-- HEAP=-Xms2g -Xmx2g -XX:MaxMetaspaceSize=256m
+- HEAP=-Xms1g -Xmx1g -XX:MaxMetaspaceSize=256m
 
 ### Volumes  
 - /your/jmx/location:/opt/jmx
@@ -43,6 +45,8 @@ When the test finish it will generate the report of your test execution.
 
 #### RUN_TEST
 If you change it, the image will only generate the report of the test execution.  
+  
+If you would like to execute your test using blaze meter taurus (bzt), set the variable `USE_BLAZE_METER` to `true`.
   
 #### MERGE_RESULTS
 You can use this image to generate report, but, imagine that you executed the test plan in a lot of machines, so, if you set this variable as `true` and put all `JTL` files in the result folder, the image will generate a new file with the name setted in `JTL_FILE`variable and generate the report using this file.  

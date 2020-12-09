@@ -6,7 +6,11 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get -y update \
    && apt-get -y install fontconfig \
    && apt-get -y install ttf-dejavu \
+   && apt-get -y install python3 python3-pip \
    && fc-cache -f
+
+RUN python3 -m pip install bzt
+
 ENV DEBIAN_FRONTEND teletype
 
 RUN mkdir /opt/tools
@@ -42,44 +46,8 @@ RUN mkdir -p ${RESULT_HOME}
 RUN mkdir -p /opt/jmx
 
 ADD merge-results.py /opt/tools/merge-results.py
+ADD entrypoint.sh /opt/entrypoint.sh
 
-#WORKDIR /opt/tools/jmeter
+WORKDIR /opt/jmx
 
-#ENV JAVA_OPTS="-Xms2G -Xmx2G"
-#ENV JVM_ARGS="-Xms2G -Xmx2G"
-
-RUN echo 'echo "|====================================|"' >> /opt/entrypoint.sh
-RUN echo 'echo "|========== ENV VALUES ==============|"' >> /opt/entrypoint.sh
-RUN echo 'echo "|====================================|"' >> /opt/entrypoint.sh
-RUN echo 'echo "| PROPS_PATH:    " ${PROPS_PATH}' >> /opt/entrypoint.sh
-RUN echo 'echo "| JMX_FILE:      " ${JMX_FILE}' >> /opt/entrypoint.sh
-RUN echo 'echo "| JTL_FILE:      " ${JTL_FILE}' >> /opt/entrypoint.sh
-RUN echo 'echo "| RUN_TEST:      " ${RUN_TEST}' >> /opt/entrypoint.sh
-RUN echo 'echo "| MERGE_RESULTS: " ${MERGE_RESULTS}' >> /opt/entrypoint.sh
-RUN echo 'echo "| REPORT_FOLDER: " ${REPORT_FOLDER}' >> /opt/entrypoint.sh
-RUN echo 'echo "| HEAP:          " ${HEAP}' >> /opt/entrypoint.sh
-RUN echo 'echo "|====================================|"' >> /opt/entrypoint.sh
-
-RUN echo 'if [ "${RUN_TEST}" = false ] ; then' >> /opt/entrypoint.sh
-RUN echo '    echo "--- ONLY REPORT MODE ---"' >> /opt/entrypoint.sh
-RUN echo '    if [ "${MERGE_RESULTS}" = true ] ; then' >> /opt/entrypoint.sh
-RUN echo '        echo "+++ MERGING RESULTS +++"' >> /opt/entrypoint.sh
-RUN echo '        python /opt/tools/merge-results.py' >> /opt/entrypoint.sh
-RUN echo '    fi' >> /opt/entrypoint.sh
-RUN echo 'else' >> /opt/entrypoint.sh
-RUN echo '    echo "+++ TESTING +++"' >> /opt/entrypoint.sh
-RUN echo '    ${JMETER_HOME}/bin/jmeter -n -p /opt/jmx/${PROPS_PATH} -t /opt/jmx/${JMX_FILE} -l ${RESULT_HOME}/${JTL_FILE} -j ${RESULT_HOME}/log-file.log' >> /opt/entrypoint.sh
-RUN echo 'fi' >> /opt/entrypoint.sh
-
-RUN echo 'echo "--- MOVING OLD REPORTS ---"' >> /opt/entrypoint.sh
-RUN echo 'mv ${RESULT_HOME}/${REPORT_FOLDER} ${RESULT_HOME}/${REPORT_FOLDER}-$(date +"%Y%m%d%H%M")' >> /opt/entrypoint.sh
-
-RUN echo 'echo "+++ GENERATING REPORT +++"' >> /opt/entrypoint.sh
-RUN echo 'if [ "${MERGE_RESULTS}" = true ] ; then' >> /opt/entrypoint.sh
-RUN echo '    ${JMETER_HOME}/bin/jmeter -g ${RESULT_HOME}/mergedResults.jtl -o ${RESULT_HOME}/${REPORT_FOLDER}' >> /opt/entrypoint.sh
-RUN echo 'else' >> /opt/entrypoint.sh
-RUN echo '    ${JMETER_HOME}/bin/jmeter -g ${RESULT_HOME}/${JTL_FILE} -o ${RESULT_HOME}/${REPORT_FOLDER}' >> /opt/entrypoint.sh
-RUN echo 'fi' >> /opt/entrypoint.sh
-
-
-ENTRYPOINT [ "sh", "/opt/entrypoint.sh"]
+ENTRYPOINT [ "/bin/bash", "/opt/entrypoint.sh"]
