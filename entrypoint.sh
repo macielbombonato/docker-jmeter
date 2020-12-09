@@ -11,6 +11,15 @@ echo "| MERGE_RESULTS:        " ${MERGE_RESULTS}
 echo "| REPORT_FOLDER:        " ${REPORT_FOLDER}
 echo "| HEAP:                 " ${HEAP}
 echo "|====================================|"
+
+export BKP_ID=$(date +"%Y%m%d%H%M")
+
+echo "--- MOVING LAST RESULT FILE ---"
+mv ${RESULT_HOME}/${JTL_FILE} ${RESULT_HOME}/${BKP_ID}-${JTL_FILE}
+
+echo "--- MOVING LAST REPORT FOLDER ---"
+mv ${RESULT_HOME}/${REPORT_FOLDER} ${RESULT_HOME}/${BKP_ID}-${REPORT_FOLDER}
+
 if [ "${RUN_TEST}" = false ] ; then
     echo "--- ONLY REPORT MODE ---"
     if [ "${MERGE_RESULTS}" = true ] ; then
@@ -28,12 +37,9 @@ else
             bzt /opt/jmx/${YML_FILE}
         fi
     else 
-        ${JMETER_HOME}/bin/jmeter -n -p /opt/jmx/${PROPS_PATH} -t /opt/jmx/${JMX_FILE} -l ${RESULT_HOME}/${JTL_FILE} -j ${RESULT_HOME}/log-file.log 
+        ${JMETER_HOME}/bin/jmeter -n -p /opt/jmx/${PROPS_PATH} -t /opt/jmx/${JMX_FILE} -l ${RESULT_HOME}/${JTL_FILE} -j ${RESULT_HOME}/log-file.log
     fi
 fi
-
-echo "--- MOVING OLD REPORTS ---"
-mv ${RESULT_HOME}/${REPORT_FOLDER} ${RESULT_HOME}/${REPORT_FOLDER}-$(date +"%Y%m%d%H%M")
 
 echo "+++ GENERATING REPORT +++"
 if [ "${MERGE_RESULTS}" = true ] ; then

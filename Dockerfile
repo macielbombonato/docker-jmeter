@@ -50,4 +50,4 @@ ADD entrypoint.sh /opt/entrypoint.sh
 
 WORKDIR /opt/jmx
 
-ENTRYPOINT [ "/bin/bash", "/opt/entrypoint.sh"]
+CMD [ "/bin/bash", "/opt/entrypoint.sh"]
